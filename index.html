@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="NFC Dijital Kartvizit ve Dükkan Bilgileri">
+  <title id="meta-title">Dijital Kartvizit | TouchMe</title>
+  <style>
+  
+:root {
+  --theme-bg: #0f172a;
+  --theme-bg-ambient: rgba(30, 41, 59, 0.5);
+  --card-bg: #ffffff;
+  --card-subtle-bg: rgba(248, 250, 252, 0.7);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-title-green: #475569;
+  --border-subtle: rgba(226, 232, 240, 0.85);
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.22);
+  --shadow-avatar: 0 15px 25px -4px rgba(0, 0, 0, 0.16);
+
+  --bg-indigo: rgba(238, 242, 255, 0.75);
+  --border-indigo: rgba(224, 231, 255, 0.9);
+  --color-indigo: #4f46e5;
+
+  --bg-violet: rgba(245, 243, 255, 0.75);
+  --border-violet: rgba(237, 233, 254, 0.9);
+  --color-violet: #7c3aed;
+
+  --bg-emerald: rgba(236, 253, 245, 0.75);
+  --border-emerald: rgba(209, 250, 229, 0.9);
+  --color-emerald: #059669;
+
+  --bg-rose: rgba(255, 241, 242, 0.75);
+  --border-rose: rgba(255, 228, 230, 0.9);
+  --color-rose: #e11d48;
+
+  --color-google-gold: #F4B400;
+  --color-instagram-pink: #c13584;
+
+  --max-w-card: 448px;
+  --radius-card: 28px;
+  --radius-xl: 16px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.page-body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--theme-bg);
+  color: var(--text-main);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: hidden;
+  padding: 0;
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  body.page-body { padding: 32px 16px; }
+}
+
+:focus-visible {
+  outline: 2px solid var(--text-main);
+  outline-offset: 3px;
+}
+
+.page-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bg-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(1.15) brightness(0.9);
+}
+
+.bg-photo-img.hidden { display: none; }
+
+.bg-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 25%, rgba(15, 23, 42, 0.72) 0%, rgba(11, 15, 23, 0.92) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.top-ambient-glow {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 240px;
+  background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.12), transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.main-wrapper {
+  width: 100%;
+  max-width: var(--max-w-card);
+  position: relative;
+  z-index: 10;
+  margin: 0 auto;
+}
+
+.card-container {
+  background-color: var(--card-bg);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+@media (min-width: 640px) {
+  .card-container {
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    min-height: auto;
+  }
+}
+
+.banner-area {
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+.banner-media {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.banner-media.hidden { display: none; }
+
+.banner-gradient-fallback {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #090d16 0%, #1e293b 60%, #0f172a 100%);
+  position: relative;
+}
+
+.banner-pattern-overlay {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.6;
+}
+
+.banner-dark-overlay {
+  position: absolute; inset: 0;
+  background: rgba(15, 23, 42, 0.25);
+}
+
+.profile-content {
+  position: relative;
+  padding: 68px 18px 28px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.avatar-container {
+  position: absolute;
+  top: -56px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.avatar-ring {
+  width: 112px; height: 112px;
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  background-color: #ffffff;
+  box-shadow: var(--shadow-avatar);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-photo { width: 100%; height: 100%; object-fit: cover; }
+.avatar-photo.hidden { display: none; }
+
+.avatar-initials {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  color: #ffffff;
+  font-size: 2rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.profile-header-text { text-align: center; margin-bottom: 6px; }
+
+.profile-name {
+  font-size: 1.65rem; font-weight: 900;
+  letter-spacing: -0.025em; color: var(--text-main);
+  line-height: 1.25; margin-bottom: 4px;
+}
+
+.profile-title-company {
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--text-title-green); line-height: 1.35;
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px; margin-top: 24px;
+}
+
+.quick-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: var(--radius-xl);
+  text-decoration: none; color: inherit;
+  transition: transform 0.18s ease;
+  min-height: 58px;
+}
+.quick-card:active { transform: scale(0.97); }
+
+.quick-icon-box {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-lg);
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.quick-icon-box svg { width: 20px; height: 20px; }
+
+.quick-card-text { min-width: 0; flex: 1; text-align: left; }
+
+.card-item-title {
+  font-size: 0.65rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-muted); display: block; margin-bottom: 2px;
+}
+
+.card-item-value {
+  font-size: 0.85rem; font-weight: 900;
+  color: var(--text-main); display: block;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.card-indigo { background-color: var(--bg-indigo); border: 1px solid var(--border-indigo); }
+.text-indigo { color: var(--color-indigo); }
+
+.card-violet { background-color: var(--bg-violet); border: 1px solid var(--border-violet); }
+.text-violet { color: var(--color-violet); }
+
+.card-emerald { background-color: var(--bg-emerald); border: 1px solid var(--border-emerald); }
+.text-emerald { color: var(--color-emerald); }
+
+.card-rose { background-color: var(--bg-rose); border: 1px solid var(--border-rose); }
+.text-rose { color: var(--color-rose); }
+
+.vcard-section { margin-top: 20px; }
+
+.vcard-save-btn {
+  width: 100%; padding: 15px 20px;
+  border-radius: var(--radius-xl);
+  background-color: #0f172a; color: #ffffff;
+  font-size: 0.95rem; font-weight: 900;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 10px 18px -4px rgba(15, 23, 42, 0.25);
+  transition: transform 0.18s ease;
+  min-height: 52px;
+}
+.vcard-save-btn:active { transform: scale(0.98); background-color: #1e293b; }
+.vcard-btn-svg { width: 20px; height: 20px; }
+
+.content-section {
+  margin-top: 24px; padding-top: 18px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.section-title {
+  font-size: 0.78rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-main); margin-bottom: 12px;
+}
+
+.custom-cards-list {
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.custom-link-card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px; background-color: var(--card-subtle-bg);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-xl);
+  text-decoration: none; color: inherit;
+  transition: transform 0.18s ease; min-height: 56px;
+}
+.custom-link-card:active { transform: scale(0.98); background-color: #f1f5f9; }
+
+.custom-link-left {
+  display: flex; align-items: center; gap: 12px; min-width: 0;
+}
+
+.custom-link-icon-box {
+  width: 38px; height: 38px; border-radius: var(--radius-lg);
+  background-color: #ffffff; border: 1px solid rgba(226, 232, 240, 0.85);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--text-main);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.custom-link-icon-box svg { width: 18px; height: 18px; }
+
+.custom-link-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.custom-link-title {
+  font-size: 0.88rem; font-weight: 800; color: var(--text-main);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.custom-link-desc {
+  font-size: 0.75rem; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.custom-link-arrow { color: #94a3b8; flex-shrink: 0; display: flex; align-items: center; }
+.custom-link-arrow svg { width: 16px; height: 16px; }
+
+.social-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+}
+
+.social-btn {
+  padding: 13px 14px; border-radius: var(--radius-xl);
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; font-weight: 900; font-size: 0.85rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.18s ease; min-height: 48px;
+}
+.social-btn:active { transform: scale(0.97); }
+
+.social-btn-icon {
+  width: 20px; height: 20px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.social-btn-icon svg { width: 20px; height: 20px; }
+.social-btn-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.google-btn {
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.instagram-btn { background-color: var(--color-instagram-pink); color: #ffffff; }
+
+.info-card {
+  padding: 16px; background-color: var(--card-subtle-bg);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-xl);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.address-desc { font-size: 0.88rem; color: var(--text-main); line-height: 1.5; }
+
+.outline-action-btn {
+  width: 100%; padding: 9px 14px; background-color: #ffffff;
+  border: 1px solid #cbd5e1; border-radius: var(--radius-lg);
+  font-size: 0.82rem; font-weight: 800; color: var(--text-main);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 6px; min-height: 40px; transition: all 0.18s ease;
+}
+.outline-action-btn:active { transform: scale(0.98); background-color: #f8fafc; }
+
+.iban-card-item {
+  padding: 16px; background-color: var(--card-subtle-bg);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-xl);
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.iban-card-top {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+}
+.bank-val { font-size: 0.95rem; color: var(--text-main); }
+.recipient-val { font-size: 0.95rem; color: var(--text-main); }
+.text-right { text-align: right; }
+
+.iban-code-box {
+  background-color: rgba(241, 245, 249, 0.85);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: var(--radius-lg);
+  padding: 10px 12px; text-align: center;
+}
+
+.iban-monospace-text {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.88rem; font-weight: 800; letter-spacing: 0.04em;
+  color: var(--text-main); word-break: break-all; user-select: all; display: block;
+}
+
+.iban-copy-btn {
+  width: 100%; padding: 10px 14px; background-color: #ffffff;
+  border: 1px solid #cbd5e1; border-radius: var(--radius-lg);
+  font-size: 0.85rem; font-weight: 800; color: var(--text-main);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 6px; min-height: 42px; transition: all 0.2s ease;
+}
+.iban-copy-btn:hover { background-color: #f8fafc; }
+.iban-copy-btn:active { transform: scale(0.98); }
+.iban-copy-btn.copied {
+  background-color: #ecfdf5 !important;
+  border-color: #6ee7b7 !important;
+  color: #047857 !important;
+}
+
+
+
+.card-footer {
+  text-align: center; padding: 24px 0 8px 0;
+  font-size: 0.72rem; font-weight: 800; color: #94a3b8;
+  border-top: 1px solid #f1f5f9; margin-top: 24px;
+}
+
+.toast-popup {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background-color: #0f172a; color: #ffffff;
+  padding: 12px 22px; border-radius: var(--radius-pill);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.88rem; font-weight: 700;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  pointer-events: none; opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 999; max-width: 90vw; white-space: nowrap;
+}
+.toast-popup.active { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast-check-svg { width: 18px; height: 18px; color: #22c55e; flex-shrink: 0; }
+
+  </style>
+</head>
+<body class="page-body">
+
+  <div class="page-background" id="page-background" aria-hidden="true">
+    <img id="bg-photo" src="" alt="Arka Plan" class="bg-photo-img hidden">
+    <div class="bg-photo-overlay"></div>
+  </div>
+
+  <div class="top-ambient-glow" aria-hidden="true"></div>
+
+  <main class="main-wrapper">
+    <div class="card-container">
+
+      <header class="banner-area" id="banner-wrapper">
+        <img id="banner-img" src="" alt="Banner" class="banner-media hidden">
+        <div class="banner-gradient-fallback" id="banner-fallback">
+          <div class="banner-pattern-overlay"></div>
+        </div>
+        <div class="banner-dark-overlay"></div>
+      </header>
+
+      <div class="profile-content">
+
+        <div class="avatar-container">
+          <div class="avatar-ring">
+            <img id="avatar-img" src="" alt="Profil" class="avatar-photo hidden">
+            <div id="avatar-fallback" class="avatar-initials">DK</div>
+          </div>
+        </div>
+
+        <div class="profile-header-text">
+          <h1 class="profile-name" id="profile-name">Ad Soyad</h1>
+          <p class="profile-title-company" id="profile-title">Dükkan Adı &bull; Ünvan</p>
+        </div>
+
+        <section class="quick-grid" aria-label="Hızlı İletişim">
+          <a href="#" id="link-phone-work" class="quick-card card-indigo" aria-label="İş Telefonu ile ara">
+            <div class="quick-icon-box text-indigo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div class="quick-card-text">
+              <span class="card-item-title">İş Telefonu</span>
+              <span class="card-item-value" id="val-phone-work">0224 000 00 00</span>
+            </div>
+          </a>
+
+          <a href="#" id="link-phone-mobile" class="quick-card card-violet" aria-label="Cep Telefonu ile ara">
+            <div class="quick-icon-box text-violet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="3" ry="3"/>
+                <line x1="12" y1="18" x2="12.01" y2="18"/>
+              </svg>
+            </div>
+            <div class="quick-card-text">
+              <span class="card-item-title">Cep Telefonu</span>
+              <span class="card-item-value" id="val-phone-mobile">0555 000 00 00</span>
+            </div>
+          </a>
+
+          <a href="#" id="link-whatsapp" class="quick-card card-emerald" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp mesajı gönder">
+            <div class="quick-icon-box text-emerald">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.09 7.42C8.94 7.42 8.7 7.48 8.5 7.72C8.3 7.96 7.74 8.51 7.74 9.61C7.74 10.71 8.54 11.78 8.65 11.93C8.76 12.08 10.22 14.33 12.46 15.3C14.32 16.1 14.7 15.94 15.11 15.9C15.52 15.86 16.44 15.35 16.63 14.82C16.82 14.29 16.82 13.84 16.76 13.74C16.7 13.64 16.55 13.59 16.32 13.47C16.09 13.35 14.99 12.81 14.78 12.74C14.58 12.66 14.43 12.63 14.28 12.86C14.13 13.09 13.7 13.6 13.57 13.75C13.44 13.9 13.31 13.92 13.08 13.8C12.85 13.68 11.89 13.37 10.76 12.36C9.88 11.58 9.29 10.61 9.12 10.32C8.95 10.03 9.1 9.87 9.22 9.75C9.33 9.64 9.46 9.47 9.58 9.33C9.7 9.19 9.74 9.09 9.82 8.93C9.9 8.77 9.86 8.63 9.8 8.51C9.74 8.39 9.29 7.29 9.09 7.42Z"/>
+              </svg>
+            </div>
+            <div class="quick-card-text">
+              <span class="card-item-title">WhatsApp</span>
+              <span class="card-item-value" id="val-whatsapp">Mesaj Gönder</span>
+            </div>
+          </a>
+
+          <a href="#" id="link-map" class="quick-card card-rose" target="_blank" rel="noopener noreferrer" aria-label="Haritada yol tarifi al">
+            <div class="quick-icon-box text-rose">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div class="quick-card-text">
+              <span class="card-item-title">Adres</span>
+              <span class="card-item-value">Haritada Aç</span>
+            </div>
+          </a>
+        </section>
+
+        <div class="vcard-section">
+          <button type="button" id="btn-save-vcard" class="vcard-save-btn" aria-label="Kişiyi telefon rehberine kaydet">
+            <svg class="vcard-btn-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            <span>Rehbere Kaydet</span>
+          </button>
+        </div>
+
+        <section class="content-section" id="section-custom-cards" aria-label="Özel Bağlantılar">
+          <h2 class="section-title">Bağlantılar &amp; Hizmetler</h2>
+          <div class="custom-cards-list" id="custom-cards-container"></div>
+        </section>
+
+        <section class="content-section" aria-label="Sosyal Medya ve Değerlendirme">
+          <h2 class="section-title">Sosyal Medya &amp; Linkler</h2>
+          <div class="social-grid">
+            <a href="#" id="link-google-review" class="social-btn google-btn" target="_blank" rel="noopener noreferrer">
+              <div class="social-btn-icon">
+                <svg viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+              </div>
+              <span class="social-btn-label">Google Yorumlar</span>
+            </a>
+            <a href="#" id="link-instagram" class="social-btn instagram-btn" target="_blank" rel="noopener noreferrer">
+              <div class="social-btn-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                </svg>
+              </div>
+              <span class="social-btn-label">Instagram</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="content-section" aria-label="Açık Adres">
+          <h2 class="section-title">Açık Adres</h2>
+          <div class="info-card">
+            <p class="address-desc" id="display-address">Adres bilgisi buraya gelecek</p>
+            <div class="card-btn-row">
+              <button type="button" id="btn-copy-address" class="outline-action-btn">
+                <span>Adresi Kopyala</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" aria-label="Hesap Bilgileri IBAN">
+          <h2 class="section-title">Hesap Bilgileri (IBAN)</h2>
+          <div class="iban-card-item">
+            <div class="iban-card-top">
+              <div>
+                <span class="card-item-title">BANKA</span>
+                <span class="card-item-value bank-val" id="display-bank-name">Banka Adı</span>
+              </div>
+              <div class="text-right">
+                <span class="card-item-title">ALICI</span>
+                <span class="card-item-value recipient-val" id="display-recipient-name">Ad Soyad</span>
+              </div>
+            </div>
+
+            <div class="iban-code-box">
+              <span class="iban-monospace-text" id="display-iban-code">TR00 0000 0000 0000 0000 0000 00</span>
+            </div>
+
+            <button type="button" id="btn-copy-iban" class="iban-copy-btn">
+              <span>Kopyala</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="content-section" id="section-kurum-vergi" aria-label="Kurum ve Vergi Bilgileri">
+          <h2 class="section-title">Kurum &amp; Vergi Bilgileri</h2>
+          <div class="iban-card-item">
+            <div class="iban-card-top">
+              <div>
+                <span class="card-item-title">KURUM</span>
+                <span class="card-item-value bank-val" id="display-kurum-name">Kurum Adı</span>
+              </div>
+            </div>
+
+            <div class="iban-card-top">
+              <div>
+                <span class="card-item-title">ADRES</span>
+                <span class="card-item-value recipient-val" id="display-kurum-address" style="white-space: pre-line;">Kurum Adresi</span>
+              </div>
+            </div>
+
+            <div class="iban-card-top">
+              <div>
+                <span class="card-item-title">VERGİ DAİRESİ</span>
+                <span class="card-item-value bank-val" id="display-tax-office">Vergi Dairesi</span>
+              </div>
+              <div class="text-right">
+                <span class="card-item-title">VERGİ NO</span>
+                <span class="card-item-value recipient-val" id="display-tax-no">Vergi No</span>
+              </div>
+            </div>
+
+            <button type="button" id="btn-copy-kurum" class="iban-copy-btn">
+              <span>Bilgileri Kopyala</span>
+            </button>
+          </div>
+        </section>
+
+
+
+        <footer class="card-footer">
+          <p>TouchMe Dijital Kartvizit</p>
+        </footer>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-popup" id="toast" role="alert" aria-live="polite">
+    <svg class="toast-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    <span id="toast-message">Kopyalandı!</span>
+  </div>
+
+  <script>
+  
+const BILGILER = {
+  "adSoyad": "Ghalia Lounge",
+  "unvanFirma": "",
+  "arkaPlanResmi": "data:image/png;base64,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",
+  "bannerResmi": "data:image/png;base64,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",
+  "profilResmi": "data:image/jpeg;base64,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",
+  "isTelefonu": "444 80 82",
+  "cepTelefonu": "444 80 82",
+  "whatsapp": "905495427672",
+  "haritaUrl": "https://www.google.com/maps?kgmid=/g/11hmrs5mp6&hl=tr-TR&shem=aiose1,epsd1,ltae,rimspwouoe&shndl=30&kgs=dfa733e323292cea&um=1&ie=UTF-8&fb=1&gl=tr&sa=X&geocode=KUkCA4HPycoUMfMXkPwBeSNX&daddr=G%C3%B6ksu,+K%C3%BC%C3%A7%C3%BCksu+Cd.+No:8/1,+34815+Beykoz/%C4%B0stanbul",
+  "acikAdres": "Göksu, Küçüksu Cd. No: 8/1, 34815 Beykoz / İstanbul",
+  "googleYorumUrl": "https://www.google.com/search?kgmid=/g/11hmrs5mp6&hl=tr-TR&q=Ghalia+Lounge&shem=aiose1,epsd1,ltae,rimspwouoe&shndl=30&source=sh/x/loc/osrp/m5/5&kgs=dfa733e323292cea&utm_source=aiose1,epsd1,ltae,rimspwouoe,sh/x/loc/osrp/m5/5#lrd=0x14cac9cf81030249:0x57237901fc9017f3,3,,,,",
+  "instagramKullaniciAdi": "ghalialounge",
+  "bankaAdi": "",
+  "alici": "",
+  "iban": "",
+  "kurumAdi": "",
+  "kurumAdres": "",
+  "vergiDairesi": "",
+  "vergiNo": "",
+  "ekstraKartlar": [
+    {
+      "baslik": "E-Posta",
+      "altBaslik": "info@ghalia.com.tr",
+      "url": "mailto:info@ghalia.com.tr",
+      "ikon": "mail"
+    },
+    {
+      "baslik": "Web Sitesi",
+      "altBaslik": "www.ghalia.com.tr",
+      "url": "https://www.ghalia.com.tr/",
+      "ikon": "web"
+    },
+    {
+      "baslik": "Online Menü & Katalog",
+      "altBaslik": "Fiyat ve ürün listemiz",
+      "url": "https://www.ghalia.com.tr/menu",
+      "ikon": "menu"
+    },
+    {
+      "baslik": "Online Randevu Al",
+      "altBaslik": "Müsait saatleri inceleyin",
+      "url": "https://www.google.com/maps/reserve/v/dine/c/yLn14tkCfIM?source=pa&opi=89978449&hl=tr-TR&gei=nTzeaoq_D_-ji-gPtcy_2Qs&sourceurl=https://www.google.com/search?kgmid%3D/g/11hmrs5mp6%26hl%3Dtr-TR%26q%3DGhalia%2BLounge%26shem%3Daiose1,epsd1,ltae,rimspwouoe%26shndl%3D30%26source%3Dsh/x/loc/osrp/m5/5%26kgs%3Ddfa733e323292cea",
+      "ikon": "randevu"
+    }
+  ]
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  initCardData();
+  setupEventListeners();
+});
+
+function initCardData() {
+  setText("profile-name", BILGILER.adSoyad);
+  setText("profile-title", BILGILER.unvanFirma);
+  setText("meta-title", `${BILGILER.adSoyad} | TouchMe`);
+
+  const bgPhoto = document.getElementById("bg-photo");
+  if (bgPhoto && BILGILER.arkaPlanResmi) {
+    bgPhoto.src = BILGILER.arkaPlanResmi;
+    bgPhoto.classList.remove("hidden");
+  } else if (bgPhoto) {
+    bgPhoto.classList.add("hidden");
+  }
+
+  const bannerImg = document.getElementById("banner-img");
+  const bannerFallback = document.getElementById("banner-fallback");
+  if (BILGILER.bannerResmi && bannerImg) {
+    bannerImg.src = BILGILER.bannerResmi;
+    bannerImg.classList.remove("hidden");
+    if (bannerFallback) bannerFallback.style.display = "none";
+  }
+
+  const avatarImg = document.getElementById("avatar-img");
+  const avatarFallback = document.getElementById("avatar-fallback");
+  if (BILGILER.profilResmi && avatarImg) {
+    avatarImg.src = BILGILER.profilResmi;
+    avatarImg.classList.remove("hidden");
+    if (avatarFallback) avatarFallback.style.display = "none";
+  } else if (avatarFallback) {
+    avatarFallback.textContent = getInitials(BILGILER.adSoyad);
+  }
+
+  const cleanWork = (BILGILER.isTelefonu || "").replace(/[^0-9+]/g, "");
+  setHref("link-phone-work", `tel:${cleanWork}`);
+  setText("val-phone-work", BILGILER.isTelefonu);
+
+  const cleanMobile = (BILGILER.cepTelefonu || "").replace(/[^0-9+]/g, "");
+  setHref("link-phone-mobile", `tel:${cleanMobile}`);
+  setText("val-phone-mobile", BILGILER.cepTelefonu);
+
+  const cleanWa = (BILGILER.whatsapp || "").replace(/[^0-9]/g, "");
+  const waMsg = encodeURIComponent("Merhaba, NFC kartınız üzerinden ulaşıyorum.");
+  setHref("link-whatsapp", `https://wa.me/${cleanWa}?text=${waMsg}`);
+  setText("val-whatsapp", "WhatsApp");
+
+  setHref("link-map", BILGILER.haritaUrl);
+  setText("display-address", BILGILER.acikAdres);
+
+  setHref("link-google-review", BILGILER.googleYorumUrl);
+  const cleanIg = (BILGILER.instagramKullaniciAdi || "").replace("@", "").trim();
+  setHref("link-instagram", `https://www.instagram.com/${cleanIg}/`);
+
+  setText("display-bank-name", BILGILER.bankaAdi);
+  setText("display-recipient-name", BILGILER.alici);
+  setText("display-iban-code", BILGILER.iban);
+  setText("display-kurum-name", BILGILER.kurumAdi);
+  setText("display-kurum-address", BILGILER.kurumAdres);
+  setText("display-tax-office", BILGILER.vergiDairesi);
+  setText("display-tax-no", BILGILER.vergiNo);
+
+  renderCustomCards();
+
+  // Boş bırakılan bilgilerin bloklarını karttan tamamen kaldır (demo veri asla basılmaz)
+  dropIfEmpty(BILGILER.isTelefonu, "link-phone-work", ".quick-card");
+  dropIfEmpty(BILGILER.cepTelefonu, "link-phone-mobile", ".quick-card");
+  dropIfEmpty(BILGILER.whatsapp, "link-whatsapp", ".quick-card");
+  dropIfEmpty(BILGILER.haritaUrl, "link-map", ".quick-card");
+  dropIfEmpty(BILGILER.googleYorumUrl, "link-google-review", ".social-btn");
+  dropIfEmpty(BILGILER.instagramKullaniciAdi, "link-instagram", ".social-btn");
+  dropIfEmpty(BILGILER.acikAdres, "display-address", ".content-section");
+  dropIfEmpty(BILGILER.unvanFirma, "profile-title");
+  dropIfEmpty(BILGILER.adSoyad, "profile-name");
+
+  const ibanSection = document.getElementById("display-iban-code")?.closest(".content-section");
+  if (!BILGILER.bankaAdi && !BILGILER.alici && !BILGILER.iban) {
+    if (ibanSection) ibanSection.remove();
+  } else {
+    dropRowIfEmpty(BILGILER.bankaAdi, "display-bank-name");
+    dropRowIfEmpty(BILGILER.alici, "display-recipient-name");
+    dropRowIfEmpty(BILGILER.iban, "display-iban-code");
+    dropIfEmpty(BILGILER.iban, "btn-copy-iban");
+  }
+
+  const kurumSection = document.getElementById("section-kurum-vergi") || document.getElementById("display-kurum-name")?.closest(".content-section");
+  if (!BILGILER.kurumAdi && !BILGILER.kurumAdres && !BILGILER.vergiDairesi && !BILGILER.vergiNo) {
+    if (kurumSection) kurumSection.remove();
+  } else {
+    dropRowIfEmpty(BILGILER.kurumAdi, "display-kurum-name");
+    dropRowIfEmpty(BILGILER.kurumAdres, "display-kurum-address");
+    dropRowIfEmpty(BILGILER.vergiDairesi, "display-tax-office");
+    dropRowIfEmpty(BILGILER.vergiNo, "display-tax-no");
+  }
+
+  const quickGrid = document.querySelector(".quick-grid");
+  if (quickGrid && !quickGrid.querySelector(".quick-card")) quickGrid.remove();
+
+  const socialGrid = document.querySelector(".social-grid");
+  if (socialGrid && !socialGrid.querySelector(".social-btn")) {
+    const socialSection = socialGrid.closest(".content-section");
+    if (socialSection) socialSection.remove();
+  }
+
+  if (!BILGILER.profilResmi && !BILGILER.adSoyad) {
+    const avatarWrap = document.querySelector(".avatar-container");
+    if (avatarWrap) avatarWrap.remove();
+  }
+}
+
+function renderCustomCards() {
+  const container = document.getElementById("custom-cards-container");
+  const section = document.getElementById("section-custom-cards");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!BILGILER.ekstraKartlar || !BILGILER.ekstraKartlar.length) {
+    if (section) section.style.display = "none";
+    return;
+  }
+  if (section) section.style.display = "block";
+
+  BILGILER.ekstraKartlar.forEach(kart => {
+    const a = document.createElement("a");
+    a.className = "custom-link-card";
+    a.href = kart.url || "#";
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+
+    const iconSvg = getCardIconSvg(kart.ikon);
+    a.innerHTML = `
+      <div class="custom-link-left">
+        <div class="custom-link-icon-box">${iconSvg}</div>
+        <div class="custom-link-info">
+          <span class="custom-link-title">${kart.baslik || 'Bağlantı'}</span>
+          ${kart.altBaslik ? `<span class="custom-link-desc">${kart.altBaslik}</span>` : ''}
+        </div>
+      </div>
+      <div class="custom-link-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    `;
+    container.appendChild(a);
+  });
+}
+
+function getCardIconSvg(ikon) {
+  switch (ikon) {
+    case "menu":
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
+    case "web":
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+    case "randevu":
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+    case "yildiz":
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    case "sepet":
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
+    case "mail":
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
+    default:
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
+  }
+}
+
+function setupEventListeners() {
+  const btnIban = document.getElementById("btn-copy-iban");
+  if (btnIban) btnIban.addEventListener("click", () => copyText(BILGILER.iban, btnIban, "IBAN panoya kopyalandı!"));
+
+  const btnKurum = document.getElementById("btn-copy-kurum");
+  if (btnKurum) {
+    btnKurum.addEventListener("click", () => {
+      const p = [];
+      if (BILGILER.kurumAdi) p.push(BILGILER.kurumAdi);
+      if (BILGILER.kurumAdres) p.push(BILGILER.kurumAdres);
+      if (BILGILER.vergiDairesi) p.push(`VERGİ DAİRESİ: ${BILGILER.vergiDairesi}`);
+      if (BILGILER.vergiNo) p.push(`VERGİ NO: ${BILGILER.vergiNo}`);
+      copyText(p.join("\r\n"), btnKurum, "Kurum bilgileri panoya kopyalandı!");
+    });
+  }
+
+  const btnAddr = document.getElementById("btn-copy-address");
+  if (btnAddr) btnAddr.addEventListener("click", () => copyText(BILGILER.acikAdres, btnAddr, "Adres panoya kopyalandı!"));
+
+  const btnVcard = document.getElementById("btn-save-vcard");
+  if (btnVcard) btnVcard.addEventListener("click", downloadVCard);
+}
+
+async function copyText(text, btn, toastMsg) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.left = "-9999px";
+      document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); document.body.removeChild(ta);
+    }
+    if (navigator.vibrate) navigator.vibrate(40);
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = "<span>✓ Kopyalandı!</span>";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove("copied"); }, 2000);
+    }
+    showToast(toastMsg);
+  } catch (e) {
+    showToast("Kopyalanamadı.");
+  }
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  const tm = document.getElementById("toast-message");
+  if (!t || !tm) return;
+  tm.textContent = msg;
+  t.classList.add("active");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("active"), 2200);
+}
+
+function downloadVCard() {
+  const cleanMobile = (BILGILER.cepTelefonu || "").replace(/[^0-9+]/g, "");
+  const cleanWork = (BILGILER.isTelefonu || "").replace(/[^0-9+]/g, "");
+  const vcf = ["BEGIN:VCARD", "VERSION:3.0"];
+  if (BILGILER.adSoyad) vcf.push(`FN:${BILGILER.adSoyad}`);
+  if (BILGILER.unvanFirma) { vcf.push(`ORG:${BILGILER.unvanFirma}`); vcf.push(`TITLE:${BILGILER.unvanFirma}`); }
+  if (cleanMobile) vcf.push(`TEL;TYPE=CELL,VOICE:${cleanMobile}`);
+  if (cleanWork) vcf.push(`TEL;TYPE=WORK,VOICE:${cleanWork}`);
+  if (BILGILER.acikAdres) vcf.push(`ADR;TYPE=WORK:;;${BILGILER.acikAdres};;;;`);
+  if (!BILGILER.unvanFirma && BILGILER.kurumAdi) vcf.push(`ORG:${BILGILER.kurumAdi}`);
+  if (BILGILER.eposta) vcf.push(`EMAIL:${BILGILER.eposta}`);
+  if (!BILGILER.acikAdres && BILGILER.kurumAdres) vcf.push(`ADR;TYPE=WORK:;;${BILGILER.kurumAdres};;;;`);
+  vcf.push("NOTE:TouchMe kartviziti ile kaydedildi.", "END:VCARD");
+  const vcardText = vcf.join("\r\n");
+
+  const blob = new Blob([vcardText], { type: "text/vcard;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${(BILGILER.adSoyad || 'kartvizit').toLowerCase().replace(/\s+/g, '-')}.vcf`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  showToast("Rehber kartı indirildi!");
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el && val) el.textContent = val;
+}
+function setHref(id, url) {
+  const el = document.getElementById(id);
+  if (el && url) el.href = url;
+}
+function dropIfEmpty(value, id, scopeSelector) {
+  if (value && String(value).trim() !== "") return;
+  const el = document.getElementById(id);
+  if (!el) return;
+  const target = (scopeSelector && el.closest(scopeSelector)) || el;
+  if (target && target.parentNode) target.parentNode.removeChild(target);
+}
+function dropRowIfEmpty(value, id) {
+  if (value && String(value).trim() !== "") return;
+  const el = document.getElementById(id);
+  if (!el) return;
+  const target = el.parentElement || el;
+  const rowParent = target.parentElement;
+  if (target && target.parentNode) target.parentNode.removeChild(target);
+  if (rowParent && rowParent.classList.contains("iban-card-top") && rowParent.children.length === 0) {
+    if (rowParent.parentNode) rowParent.parentNode.removeChild(rowParent);
+  }
+}
+function getInitials(name) {
+  if (!name) return "DK";
+  const p = name.trim().split(/\s+/);
+  if (p.length === 1) return p[0].slice(0, 2).toUpperCase();
+  return (p[0][0] + p[p.length - 1][0]).toUpperCase();
+}
+
+  </script>
+</body>
+</html>
